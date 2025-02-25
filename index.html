@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ren Atmo - Portfolio</title>
+  <style>
+    /* ベースリセット */
+    * {
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
+    }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: "Arial", sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* グリッチテキストアニメーション */
+    .glitch {
+      position: relative;
+      font-size: 4rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      display: inline-block;
+      animation: glitch 2.5s infinite;
+    }
+    @keyframes glitch {
+      0% {
+        text-shadow: 2px 0 red, -2px 0 blue;
+      }
+      20% {
+        text-shadow: -2px 0 red, 2px 0 blue;
+      }
+      40% {
+        text-shadow: 2px 0 red, -2px 0 blue;
+      }
+      60% {
+        text-shadow: -2px 0 red, 2px 0 blue;
+      }
+      80% {
+        text-shadow: 2px 0 red, -2px 0 blue;
+      }
+      100% {
+        text-shadow: -2px 0 red, 2px 0 blue;
+      }
+    }
+
+    /* 各セクション */
+    section {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 5vh 10vw;
+    }
+
+    /* Heroセクション */
+    #hero {
+      background: url("image1.jpg") center/cover no-repeat;
+      position: relative;
+    }
+    #hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4); /* 画面全体を少し暗く */
+    }
+    #hero h1 {
+      z-index: 1; /* 背景の上に表示 */
+    }
+
+    /* 作品セクション */
+    #works {
+      background: url("image2.jpg") center/cover no-repeat fixed;
+      background-blend-mode: multiply;
+      background-color: #111;
+    }
+    #works h2 {
+      margin-bottom: 30px;
+      font-size: 2rem;
+    }
+    #gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      max-width: 1200px;
+      width: 100%;
+    }
+    .item {
+      width: 240px;
+      background: #222;
+      padding: 10px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      text-align: center;
+    }
+    .item:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+    .item img {
+      width: 100%;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .item h3 {
+      margin-bottom: 5px;
+      font-size: 1.2rem;
+    }
+    .item p {
+      font-size: 0.9rem;
+      color: #ccc;
+      line-height: 1.4;
+    }
+
+    /* コンタクトセクション */
+    #contact {
+      background: #000;
+      text-align: center;
+    }
+    #contact h2 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    #contact p {
+      margin: 10px 0;
+      font-size: 1.1rem;
+    }
+    #contact a {
+      color: #0af;
+      text-decoration: none;
+    }
+    #contact a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Heroセクション -->
+  <section id="hero">
+    <h1 class="glitch">REN ATMO</h1>
+  </section>
+
+  <!-- 作品セクション -->
+  <section id="works">
+    <h2>Works</h2>
+    <div id="gallery"></div>
+  </section>
+
+  <!-- コンタクトセクション -->
+  <section id="contact">
+    <h2>Contact</h2>
+    <p><a href="mailto:tsutsumi.atomo@gmail.com">tsutsumi.atomo@gmail.com</a></p>
+    <p><a href="https://www.instagram.com/ren_atmo" target="_blank">@ren_atmo</a></p>
+  </section>
+
+  <!-- Google Sheets 取得用スクリプト -->
+  <script>
+    // あなたのスプレッドシートIDを設定
+    const sheetID = "1l4pruAVBkSDdCn1DlW4NIR9oU9D9_29rtaFtlCo138A";
+    const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json`;
+
+    fetch(url)
+      .then(res => res.text())
+      .then(data => {
+        // JSONをパース（Google Visualization形式のため、前後を削る）
+        const json = JSON.parse(data.substr(47).slice(0, -2));
+        const rows = json.table.rows;
+        let html = "";
+
+        // シートの構成: [0]=ID, [1]=作品タイトル, [2]=説明, [3]=画像URL
+        rows.forEach(row => {
+          const title = row.c[1]?.v || "No Title";
+          const desc  = row.c[2]?.v || "";
+          const img   = row.c[3]?.v || "https://via.placeholder.com/240";
+
+          html += `
+            <div class="item">
+              <img src="${img}" alt="${title}">
+              <h3>${title}</h3>
+              <p>${desc}</p>
+            </div>
+          `;
+        });
+
+        document.getElementById("gallery").innerHTML = html;
+      })
+      .catch(err => {
+        console.error("Sheetsデータ取得エラー:", err);
+      });
+  </script>
+</body>
+</html>
