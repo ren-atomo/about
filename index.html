@@ -684,7 +684,7 @@
     <h2 class="section-title">About</h2>
     <div class="about-content">
       <div class="about-image">
-        <img src="/api/placeholder/400/320" alt="Ren Atmoのプロフィール写真">
+        <img id="profile-image" src="/api/placeholder/400/320" alt="Ren Atmoのプロフィール写真">
       </div>
       <div class="about-text">
         <p>東京在住のアーティスト。視覚芸術を通じて社会や自然との関係性を探求。写真、CG制作、VJ、イベント企画など多様な表現手法を用いて創作活動を展開。</p>
@@ -759,66 +759,7 @@
 
   <!-- JavaScript -->
   <script>
-    // サイト設定を読み込む
-    document.addEventListener('DOMContentLoaded', function() {
-      loadSiteSettings();
-    });
-    
-    // ローカルストレージから設定を読み込んで反映
-    function loadSiteSettings() {
-      const settingsJson = localStorage.getItem('siteSettings');
-      
-      if (settingsJson) {
-        try {
-          const settings = JSON.parse(settingsJson);
-          
-          // サイトタイトル
-          document.querySelector('.logo').textContent = settings.siteTitle;
-          document.querySelector('.glitch').textContent = settings.siteTitle;
-          document.title = settings.siteTitle + ' - Portfolio';
-          
-          // サブタイトル
-          document.querySelector('.hero-subtitle').textContent = settings.heroSubtitle;
-          
-          // Aboutテキスト
-          if (document.querySelector('.about-text p')) {
-            document.querySelector('.about-text p').textContent = settings.aboutText;
-          }
-          
-          // スキルタグ
-          if (document.querySelector('.skill-list')) {
-            const skillList = document.querySelector('.skill-list');
-            skillList.innerHTML = '';
-            
-            settings.skillTags.forEach(tag => {
-              const span = document.createElement('span');
-              span.className = 'skill-tag';
-              span.textContent = tag;
-              skillList.appendChild(span);
-            });
-          }
-          
-          // メールアドレス
-          const emailLinks = document.querySelectorAll('a[href^="mailto:"]');
-          emailLinks.forEach(link => {
-            link.href = 'mailto:' + settings.email;
-            link.textContent = settings.email;
-          });
-          
-          // SNSリンク
-          const instagramLink = document.querySelector('a[aria-label="Instagram"]');
-          if (instagramLink) instagramLink.href = settings.instagram;
-          
-          const twitterLink = document.querySelector('a[aria-label="Twitter"]');
-          if (twitterLink) twitterLink.href = settings.twitter;
-          
-          const behanceLink = document.querySelector('a[aria-label="Behance"]');
-          if (behanceLink) behanceLink.href = settings.behance;
-        } catch (e) {
-          console.error('設定の読み込みエラー:', e);
-        }
-      }
-    }
+
     
     // ナビゲーション関連
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
@@ -951,14 +892,17 @@
           let html = "";
 
           // シートの構成: [0]=ID, [1]=作品タイトル, [2]=説明, [3]=画像URL, [4]=カテゴリー
+          console.log("Loaded rows:", rows.length);
+          console.log("Categories detected:", [...new Set(rows.map(row => row.c[4]?.v))]);
+
           rows.forEach(row => {
             const id = row.c[0]?.v || Date.now();
             const title = row.c[1]?.v || "No Title";
             const desc = row.c[2]?.v || "";
             const img = row.c[3]?.v || "/api/placeholder/400/320";
-            // カテゴリーの設定（ない場合はデフォルトでdigital）
-            const category = row.c[4]?.v || "digital";
-            const categoryDisplay = categoryMap[category] || 'デジタルアート';
+            // カテゴリーの設定（ない場合はデフォルトでpicture）
+            const category = row.c[4]?.v || "picture";
+            const categoryDisplay = categoryMap[category] || 'PICTURE';
 
             html += `
               <div class="item" data-id="${id}" data-category="${category}">
@@ -989,7 +933,7 @@
               const img = item.querySelector('img').src;
               const title = item.querySelector('h3').textContent;
               const category = item.getAttribute('data-category');
-              const categoryDisplay = categoryMap[category] || 'デジタルアート';
+              const categoryDisplay = categoryMap[category] || 'PICTURE';
               
               // 説明文を取得（省略されていない完全なもの）
               const description = rows.find(row => row.c[0]?.v == id)?.c[2]?.v || "";
