@@ -672,7 +672,7 @@
   <section id="hero">
     <div class="hero-content">
       <h1 class="glitch">REN ATMO</h1>
-      <p class="hero-subtitle">DIGITAL ARTIST</p>
+      <p class="hero-subtitle">ARTIST</p>
     </div>
     <a href="#about" class="scroll-down" aria-label="下にスクロール">
       <i class="fas fa-chevron-down"></i>
@@ -687,12 +687,12 @@
         <img src="/api/placeholder/400/320" alt="Ren Atmoのプロフィール写真">
       </div>
       <div class="about-text">
-        <p>東京在住のデジタルアーティスト。テクノロジーと芸術の融合を探求し、ミニマリズムとグリッチアートを組み合わせた作品を制作。</p>
+        <p>東京在住のアーティスト。視覚芸術を通じて社会や自然との関係性を探求。写真、CG制作、VJ、イベント企画など多様な表現手法を用いて創作活動を展開。</p>
         <div class="skill-list">
-          <span class="skill-tag">デジタルアート</span>
-          <span class="skill-tag">グラフィック</span>
-          <span class="skill-tag">3D</span>
-          <span class="skill-tag">モーション</span>
+          <span class="skill-tag">Picture</span>
+          <span class="skill-tag">CG</span>
+          <span class="skill-tag">VJ</span>
+          <span class="skill-tag">Event</span>
         </div>
       </div>
     </div>
@@ -703,10 +703,10 @@
     <h2 class="section-title">Works</h2>
     <div class="filter-container">
                 <button class="filter-btn active" data-filter="all">ALL</button>
-      <button class="filter-btn" data-filter="digital">DIGITAL</button>
-      <button class="filter-btn" data-filter="graphic">GRAPHIC</button>
-      <button class="filter-btn" data-filter="motion">MOTION</button>
-      <button class="filter-btn" data-filter="3d">3D</button>
+      <button class="filter-btn" data-filter="picture">PICTURE</button>
+      <button class="filter-btn" data-filter="cg">CG</button>
+      <button class="filter-btn" data-filter="vj">VJ</button>
+      <button class="filter-btn" data-filter="event">EVENT</button>
     </div>
     
     <div id="loading" class="loading-spinner">
@@ -759,6 +759,67 @@
 
   <!-- JavaScript -->
   <script>
+    // サイト設定を読み込む
+    document.addEventListener('DOMContentLoaded', function() {
+      loadSiteSettings();
+    });
+    
+    // ローカルストレージから設定を読み込んで反映
+    function loadSiteSettings() {
+      const settingsJson = localStorage.getItem('siteSettings');
+      
+      if (settingsJson) {
+        try {
+          const settings = JSON.parse(settingsJson);
+          
+          // サイトタイトル
+          document.querySelector('.logo').textContent = settings.siteTitle;
+          document.querySelector('.glitch').textContent = settings.siteTitle;
+          document.title = settings.siteTitle + ' - Portfolio';
+          
+          // サブタイトル
+          document.querySelector('.hero-subtitle').textContent = settings.heroSubtitle;
+          
+          // Aboutテキスト
+          if (document.querySelector('.about-text p')) {
+            document.querySelector('.about-text p').textContent = settings.aboutText;
+          }
+          
+          // スキルタグ
+          if (document.querySelector('.skill-list')) {
+            const skillList = document.querySelector('.skill-list');
+            skillList.innerHTML = '';
+            
+            settings.skillTags.forEach(tag => {
+              const span = document.createElement('span');
+              span.className = 'skill-tag';
+              span.textContent = tag;
+              skillList.appendChild(span);
+            });
+          }
+          
+          // メールアドレス
+          const emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+          emailLinks.forEach(link => {
+            link.href = 'mailto:' + settings.email;
+            link.textContent = settings.email;
+          });
+          
+          // SNSリンク
+          const instagramLink = document.querySelector('a[aria-label="Instagram"]');
+          if (instagramLink) instagramLink.href = settings.instagram;
+          
+          const twitterLink = document.querySelector('a[aria-label="Twitter"]');
+          if (twitterLink) twitterLink.href = settings.twitter;
+          
+          const behanceLink = document.querySelector('a[aria-label="Behance"]');
+          if (behanceLink) behanceLink.href = settings.behance;
+        } catch (e) {
+          console.error('設定の読み込みエラー:', e);
+        }
+      }
+    }
+    
     // ナビゲーション関連
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navMenu = document.getElementById('nav-menu');
@@ -871,10 +932,10 @@
 
     // カテゴリマッピング
     const categoryMap = {
-      'digital': 'DIGITAL',
-      'graphic': 'GRAPHIC',
-      'motion': 'MOTION',
-      '3d': '3D'
+      'picture': 'PICTURE',
+      'cg': 'CG',
+      'vj': 'VJ',
+      'event': 'EVENT'
     };
 
     fetch(url)
