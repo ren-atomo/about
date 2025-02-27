@@ -667,6 +667,71 @@
         width: 95%;
       }
     }
+
+    /* 画像保護のためのCSS追加 */
+    img {
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      -khtml-user-drag: none;
+      -moz-user-drag: none;
+      -o-user-drag: none;
+      pointer-events: none;
+    }
+
+    /* テキスト選択防止 */
+    body {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    /* 入力フィールドは選択可能にする */
+    input, textarea {
+      -webkit-user-select: auto;
+      -moz-user-select: auto;
+      -ms-user-select: auto;
+      user-select: auto;
+    }
+
+    /* 画像保護オーバーレイ */
+    .image-protector {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .image-protector::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0);
+      z-index: 10;
+    }
+
+    /* ウォーターマーク（必要に応じて有効化） */
+    .watermark {
+      position: relative;
+    }
+
+    .watermark::before {
+      content: "© Ren Atmo";
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+      z-index: 9;
+      pointer-events: none;
+      transform: rotate(-45deg);
+      opacity: 0.7;
+    }
   </style>
 </head>
 <body>
@@ -700,11 +765,11 @@
   <section id="about">
     <h2 class="section-title">About</h2>
     <div class="about-content">
-      <div class="about-image">
+      <div class="about-image image-protector">
         <img id="profile-image" src="https://ren-atomo.github.io/about/me.jpg" alt="Ren Atmoのプロフィール写真">
       </div>
       <div class="about-text">
-        <p>堤 廉太郎　高校３年生/n東京在住のアーティスト。/n視覚芸術を通じて人の認知と善悪・折り合いのつけ方を探求。/nメディアアート、VJシステム製作、イベント企画など多様な表現手法を用いて創作活動を展開。/n任意団体HoPer 代表</p>
+        <p>堤 廉太郎　高校３年生\n東京在住のアーティスト。\n視覚芸術を通じて人の認知と善悪・折り合いのつけ方を探求。\nメディアアート、VJシステム製作、イベント企画など多様な表現手法を用いて創作活動を展開。\n任意団体HoPer 代表</p>
         <div class="skill-list">
           <span class="skill-tag">Picture</span>
           <span class="skill-tag">CG</span>
@@ -719,7 +784,7 @@
   <section id="works">
     <h2 class="section-title">Works</h2>
     <div class="filter-container">
-                <button class="filter-btn active" data-filter="all">ALL</button>
+      <button class="filter-btn active" data-filter="all">ALL</button>
       <button class="filter-btn" data-filter="picture">PICTURE</button>
       <button class="filter-btn" data-filter="cg">CG</button>
       <button class="filter-btn" data-filter="vj">VJ</button>
@@ -770,8 +835,6 @@
 
   <!-- JavaScript -->
   <script>
-
-    
     // ナビゲーション関連
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const navMenu = document.getElementById('nav-menu');
@@ -923,7 +986,7 @@
             html += `
               <div class="item" data-id="${id}" data-category="${category}">
                 <span class="item-category">${categoryDisplay}</span>
-                <div class="item-image">
+                <div class="item-image image-protector watermark">
                   <img src="${img}" alt="${title}" loading="lazy">
                   <div class="item-overlay">
                     <button class="view-btn">詳細を見る</button>
@@ -950,8 +1013,6 @@
           }
           
           // 作品詳細モーダルの設定
-          
-          // 作品詳細モーダルの設定
           const viewBtns = document.querySelectorAll('.view-btn');
           
           viewBtns.forEach(btn => {
@@ -972,6 +1033,9 @@
               modalTitle.textContent = title;
               modalCategory.textContent = categoryDisplay;
               modalDescription.textContent = description;
+              
+              // モーダル画像にも保護クラスを追加
+              modalImage.classList.add('image-protector', 'watermark');
               
               // モーダルを表示
               modal.style.display = 'block';
@@ -1007,6 +1071,78 @@
         document.body.style.overflow = 'auto';
       }
     });
+
+    // コンテンツ保護の追加スクリプト
+    
+    // 右クリック防止
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // コピーとカット操作を防止
+    document.addEventListener('copy', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    document.addEventListener('cut', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    // ショートカットキーの無効化
+    document.addEventListener('keydown', function(e) {
+      // Ctrl+S, Ctrl+U, Ctrl+P, F12, Ctrl+Shift+I
+      if (
+        (e.ctrlKey && (e.keyCode === 83 || e.keyCode === 85 || e.keyCode === 80)) || 
+        e.keyCode === 123 || 
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73)
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // 選択操作の防止
+    document.addEventListener('selectstart', function(e) {
+      if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // デベロッパーツール検出 (基本的な検出方法)
+    let devToolsOpen = false;
+    
+    function detectDevTools() {
+      const threshold = 160;
+      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+      
+      if ((widthThreshold || heightThreshold) && !devToolsOpen) {
+        devToolsOpen = true;
+        alert('このサイトは保護されています。コンテンツの著作権を尊重してください。');
+      } else if (!(widthThreshold || heightThreshold) && devToolsOpen) {
+        devToolsOpen = false;
+      }
+    }
+
+    // 定期的にデベロッパーツールの検出をチェック
+    setInterval(detectDevTools, 1000);
+
+    // すべての画像に保護クラスを適用
+    window.addEventListener('DOMContentLoaded', function() {
+      // プロフィール画像
+      const profileImage = document.getElementById('profile-image');
+      if (profileImage && !profileImage.parentElement.classList.contains('image-protector')) {
+        profileImage.parentElement.classList.add('image-protector', 'watermark');
+      }
+    });
+
+    // コード閲覧を困難にするためのコードの難読化メッセージ
+    console.log('%cこのサイトは保護されています', 'color: red; font-size: 48px; font-weight: bold');
+    console.log('%c無断でのコンテンツ利用は禁止されています', 'color: black; font-size: 20px;');
   </script>
 </body>
 </html>
