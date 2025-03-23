@@ -1281,25 +1281,6 @@
       }
     });
 
-    // デベロッパーツール検出 (基本的な検出方法)
-    let devToolsOpen = false;
-    
-    function detectDevTools() {
-      const threshold = 160;
-      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-      
-      if ((widthThreshold || heightThreshold) && !devToolsOpen) {
-        devToolsOpen = true;
-        alert('このサイトは保護されています。コンテンツの著作権を尊重してください。');
-      } else if (!(widthThreshold || heightThreshold) && devToolsOpen) {
-        devToolsOpen = false;
-      }
-    }
-
-    // 定期的にデベロッパーツールの検出をチェック
-    setInterval(detectDevTools, 1000);
-
     // すべての画像に保護クラスを適用
     window.addEventListener('DOMContentLoaded', function() {
       // プロフィール画像
@@ -1309,10 +1290,6 @@
       }
     });
 
-    // コード閲覧を困難にするためのコードの難読化メッセージ
-    console.log('%cこのサイトは保護されています', 'color: red; font-size: 48px; font-weight: bold');
-    console.log('%c無断でのコンテンツ利用は禁止されています', 'color: black; font-size: 20px;');
-    
     // コンタクトフォーム処理
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
