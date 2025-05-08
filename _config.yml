@@ -1,2 +1,4 @@
+url: "https://ren-atomo.github.io"
+baseurl: ""
 plugins:
   - jekyll-sitemap
